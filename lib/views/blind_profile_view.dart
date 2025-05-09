@@ -95,8 +95,8 @@ class _BlindProfileViewState extends State<BlindProfileView> {
         onDoubleTap: () => _handleButtonTap(label, context),
         child: Container(
           width: MediaQuery.of(context).size.width * 0.85,
-          height: 60,
-          margin: const EdgeInsets.symmetric(vertical: 18),
+          height: 50,
+          margin: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(24),
@@ -113,14 +113,14 @@ class _BlindProfileViewState extends State<BlindProfileView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(icon, color: Colors.white, size: 38),
-                const SizedBox(width: 20),
+                const SizedBox(width: 18),
                 Flexible(
                   child: Text(
                     label,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
+                      fontSize: 15,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.5,
                     ),
@@ -221,7 +221,7 @@ class _BlindProfileViewState extends State<BlindProfileView> {
             end: Alignment.bottomRight,
           ),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -229,12 +229,12 @@ class _BlindProfileViewState extends State<BlindProfileView> {
                 label: "Navigation Visuelle",
                 header: true,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Column(
                     children: [
                       Icon(
                         Icons.visibility,
-                        size: 60,
+                        size: 40,
                         color: Colors.white.withOpacity(0.9),
                       ),
                       const SizedBox(height: 10),
@@ -258,7 +258,7 @@ class _BlindProfileViewState extends State<BlindProfileView> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
               Semantics(
                 label: "Instructions: Appuyez sur l'un des boutons ci-dessous",
                 child: Container(
@@ -271,7 +271,7 @@ class _BlindProfileViewState extends State<BlindProfileView> {
                   child: const Text(
                     "Appuyez sur l'un des boutons ci-dessous",
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 15,
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
                     ),
