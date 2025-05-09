@@ -20,7 +20,7 @@ class _ObjectDetectionScreenState extends State<ObjectDetectionScreen> with Widg
   bool isDetecting = false;
   bool isStreaming = false;
   String serverUrl =
-      'https://ff92-196-116-184-148.ngrok-free.app/'; // À changer avec votre URL ngrok
+      'https://82a5-45-218-73-224.ngrok-free.app/'; // À changer avec votre URL ngrok
 
   // Pour le flux vidéo
   Uint8List? processedImageBytes;

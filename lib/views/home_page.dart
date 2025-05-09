@@ -1,3 +1,4 @@
+import 'package:blind_user_app/views/blinduser_homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 // Importez la page AIAgentScreen
@@ -19,7 +20,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _initTts();
     Future.delayed(const Duration(milliseconds: 500), () {
-      speak("Page d'accueil. Trois options disponibles: AI Agent, Détection des objets, Map Guidage");
+      speak("Page d'accueil. Trois options disponibles: AI Agent, Détection des objets, Map Guidage, Appel");
     });
   }
 
@@ -54,7 +55,15 @@ class _HomePageState extends State<HomePage> {
           context,
           MaterialPageRoute(builder: (context) => const ObjectDetectionScreen()),
         );
-      } else if (label == "Map Guidage") {
+      }
+      else if (label == "Appel") {
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>  BlindUserHomePage()),
+        );
+      }else if (label == "Map Guidage") {
         speak("Le guidage par carte n'est pas encore disponible");
       }
     });
@@ -114,6 +123,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -184,6 +194,7 @@ class _HomePageState extends State<HomePage> {
               ),
               buildButton("AI Agent", Icons.smart_toy, Colors.deepPurple, context),
               buildButton("Détection des objets", Icons.visibility, Colors.teal, context),
+              buildButton("Appel", Icons.phone, Colors.indigo, context),
               buildButton("Map Guidage", Icons.map, Colors.indigo, context),
               const SizedBox(height: 20),
               Semantics(

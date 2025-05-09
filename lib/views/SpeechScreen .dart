@@ -27,7 +27,7 @@ class _AIAgentScreenState extends State<AIAgentScreen> {
   List<ConversationItem> _history = [];
 
   // URL du webhook N8N via ngrok - à mettre à jour selon vos besoins
-  final String webhookUrl = 'https://e8c3-196-116-184-148.ngrok-free.app';
+  final String webhookUrl = 'https://f222-45-218-73-224.ngrok-free.app';
 
   @override
   void initState() {
