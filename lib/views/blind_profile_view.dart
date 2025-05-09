@@ -1,3 +1,4 @@
+import 'package:blind_user_app/views/blinduser_homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -71,7 +72,7 @@ class _BlindProfileViewState extends State<BlindProfileView> {
             onPressed: () {
               // Tu peux ouvrir une carte ici ou continuer à tracker
             },
-            child: const Text("Map"),
+            child: const Text("a"),
           ),
           ElevatedButton(
             onPressed: () {
@@ -79,12 +80,18 @@ class _BlindProfileViewState extends State<BlindProfileView> {
             },
             child: const Text("Camera"),
           ),
-          ElevatedButton(
-            onPressed: () {
-              // Chat, ou rediriger vers un autre écran
-            },
-            child: const Text("Chat"),
-          ),
+        ElevatedButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BlindUserHomePage(),
+      ),
+    );
+  },
+  child: const Text("appel"),
+),
+
         ],
       ),
     );
