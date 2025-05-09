@@ -19,10 +19,44 @@ class _BlindProfileViewState extends State<BlindProfileView> {
   void initState() {
     super.initState();
     _fetchUserInfo();
-    _checkPermission().then((_) {
-      _startTracking();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _askLocationSharingPermission();
     });
   }
+
+
+
+  Future<void> _askLocationSharingPermission() async {
+    bool? consent = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Partager votre position"),
+        content: const Text("Souhaitez-vous partager votre position avec votre assistant ?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text("Non"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text("Oui"),
+          ),
+        ],
+      ),
+    );
+
+    if (consent == true) {
+      await _checkPermission();
+      _startTracking();
+    }
+  }
+
+
+
+
+
+
+
 
   Future<void> _fetchUserInfo() async {
     final response = await supabase
