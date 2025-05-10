@@ -50,6 +50,7 @@ class _BlindProfileViewState extends State<BlindProfileView> {
     if (consent == true) {
       await _checkPermission();
       _startTracking();
+      print("tracking started");
     }
   }
 
