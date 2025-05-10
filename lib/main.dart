@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home:  BlindProfileView( userId: 'e6cb9f1a-4e65-4d88-849d-884980803a0c',), // Change ici pour tester la caméra
+      home:  BlindProfileView( userId: 'f26d6fe3-c3cf-424b-9ae6-322b151055b5',), // Change ici pour tester la caméra
     );
   }
 }
