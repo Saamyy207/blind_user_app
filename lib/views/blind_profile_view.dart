@@ -98,7 +98,7 @@ class _BlindProfileViewState extends State<BlindProfileView> {
   void _startTracking() {
     const locationSettings = LocationSettings(
       accuracy: LocationAccuracy.best,
-      distanceFilter: 5, // Ne notifie que s'il bouge de plus de 5m
+      distanceFilter: 1, // Ne notifie que s'il bouge de plus de 5m
     );
 
     _positionStream = Geolocator.getPositionStream(locationSettings: locationSettings).listen(
