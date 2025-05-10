@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:blind_user_app/views/blinduser_homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -77,21 +79,65 @@ class _BlindProfileViewState extends State<BlindProfileView> {
     }
   }
 
+
+
+
+
+
+
+  Position? _lastPosition;
+  StreamSubscription<Position>? _positionStream;
+
   void _startTracking() {
-    Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 10,
-      ),
-    ).listen((Position position) async {
-      await supabase.from('positions').insert({
-        'user_id': widget.userId,
-        'latitude': position.latitude,
-        'longitude': position.longitude,
-        'updated_at': DateTime.now().toIso8601String(),
-      });
-    });
+    const locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.best,
+      distanceFilter: 5, // Ne notifie que s'il bouge de plus de 5m
+    );
+
+    _positionStream = Geolocator.getPositionStream(locationSettings: locationSettings).listen(
+          (Position position) async {
+        if (_lastPosition == null || _hasMoved(position, _lastPosition!)) {
+          _lastPosition = position;
+
+          try {
+            await supabase.from('locations').insert({
+              'user_id': widget.userId,
+              'latitude': position.latitude,
+              'longitude': position.longitude,
+              'updated_at': DateTime.now().toIso8601String(),
+            });
+          }catch (e) {
+            debugPrint("Erreur d'insertion : $e");
+          }
+        }
+      },
+      onError: (error) {
+        debugPrint('Erreur de localisation : $error');
+      },
+    );
   }
+
+  @override
+  void dispose() {
+    _positionStream?.cancel();
+    super.dispose();
+  }
+
+  bool _hasMoved(Position newPos, Position oldPos) {
+    const double thresholdInMeters = 5.0;
+    double distance = Geolocator.distanceBetween(
+      oldPos.latitude,
+      oldPos.longitude,
+      newPos.latitude,
+      newPos.longitude,
+    );
+    return distance >= thresholdInMeters;
+  }
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
