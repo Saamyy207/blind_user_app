@@ -48,9 +48,12 @@ class _BlindProfileViewState extends State<BlindProfileView> {
     );
 
     if (consent == true) {
+      print("[DEBUG] L'utilisateur a accepté de partager sa position.");
       await _checkPermission();
       _startTracking();
       print("tracking started");
+    }else{
+      print("[DEBUG] L'utilisateur a refusé de partager sa position.");
     }
   }
 
@@ -75,8 +78,11 @@ class _BlindProfileViewState extends State<BlindProfileView> {
 
   Future<void> _checkPermission() async {
     LocationPermission permission = await Geolocator.checkPermission();
+    print("[DEBUG] Permission actuelle : $permission");
+
     if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
       permission = await Geolocator.requestPermission();
+      print("[DEBUG] Nouvelle permission après demande : $permission");
     }
   }
 
@@ -97,9 +103,10 @@ class _BlindProfileViewState extends State<BlindProfileView> {
 
     _positionStream = Geolocator.getPositionStream(locationSettings: locationSettings).listen(
           (Position position) async {
+            print("[DEBUG] Nouvelle position reçue : ${position.latitude}, ${position.longitude}");
         if (_lastPosition == null || _hasMoved(position, _lastPosition!)) {
           _lastPosition = position;
-
+          print("[DEBUG] Mouvement détecté, insertion en cours...");
           try {
             await supabase.from('locations').insert({
               'user_id': widget.userId,
@@ -107,8 +114,10 @@ class _BlindProfileViewState extends State<BlindProfileView> {
               'longitude': position.longitude,
               'updated_at': DateTime.now().toIso8601String(),
             });
+            print("[DEBUG] Insertion réussie !");
           }catch (e) {
             debugPrint("Erreur d'insertion : $e");
+            print("[DEBUG] Erreur d'insertion dans Supabase : $e");
           }
         }
       },
