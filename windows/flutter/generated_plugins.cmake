@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   agora_rtc_engine
   app_links
+  audioplayers_windows
   flutter_tts
   geolocator_windows
   iris_method_channel
