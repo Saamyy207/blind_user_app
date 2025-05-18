@@ -115,8 +115,12 @@ class BlindUserHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildCallView(BlindUserViewModel viewModel) {
-    return Column(
+ Widget _buildCallView(BlindUserViewModel viewModel) {
+  return GestureDetector(
+    onHorizontalDragEnd: (_) {
+      viewModel.toggleCamera();
+    },
+    child: Column(
       children: [
         Expanded(
           child: Container(
@@ -184,6 +188,8 @@ class BlindUserHomePage extends StatelessWidget {
           ),
         )
       ],
-    );
-  }
+    ),
+  );
+}
+
 }

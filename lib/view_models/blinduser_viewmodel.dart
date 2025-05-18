@@ -88,21 +88,35 @@ class BlindUserViewModel extends ChangeNotifier {
     ].request();
   }
 
-  void _listenForIncomingCalls() {
-    print('🔍 Écoute des appels entrants...');
-    _channel = supabase.channel('calls_channel');
-    _channel!.onBroadcast(
+void _listenForIncomingCalls() {
+  print('🔍 Écoute des appels entrants...');
+  _channel = supabase.channel('calls_channel');
+
+  _channel!
+    ..onBroadcast(
       event: 'incoming_call',
       callback: (payload) async {
         print('📞 Appel entrant détecté: $payload');
         await _startRinging();
       },
-    ).subscribe(
+    )
+    ..onBroadcast(
+      event: 'call_end_assistant',
+      callback: (payload) async {
+        print('📴 L\'assistant a mis fin à l\'appel: $payload');
+        if (_isInCall) {
+          await speak("L'appel a été terminé par l'assistant.");
+          await endCall();
+        }
+      },
+    )
+    ..subscribe(
       (status, error) {
         print('📡 Abonnement: $status, erreur: $error');
       },
     );
-  }
+}
+
 
   Future<void> _startRinging() async {
     print('🔔 Sonnerie démarrée');
@@ -221,6 +235,10 @@ class BlindUserViewModel extends ChangeNotifier {
       print('❌ Erreur lors de endCall: $e');
     }
   }
+Future<void> toggleCamera() async {
+  await engine.switchCamera();
+  await speak("Changement de caméra");
+}
 
 
   @override
