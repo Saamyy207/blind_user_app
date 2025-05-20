@@ -12,7 +12,7 @@ class BlindUserHomePage extends StatelessWidget {
     final blindUserViewModel = Provider.of<BlindUserViewModel>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("App de l'aveugle")),
+      appBar: AppBar(title: const Text("Blind app")),
       body: ListenableBuilder(
         listenable: blindUserViewModel,
         builder: (context, child) {
@@ -38,13 +38,13 @@ class BlindUserHomePage extends StatelessWidget {
           Icon(Icons.phone_disabled, size: 80, color: Colors.grey),
           const SizedBox(height: 24),
           const Text(
-            "En attente d'un appel de l'assistant",
+            "Waiting for assitant's call",
             style: TextStyle(fontSize: 20),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           const Text(
-            "Vous serez notifié lorsqu'un appel entrant arrive",
+            "You will be notified when an incoming call arrives",
             style: TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
@@ -70,7 +70,7 @@ class BlindUserHomePage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               const Text(
-                "Appel entrant de l'assistant",
+                "Incoming call from assistant",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -104,7 +104,7 @@ class BlindUserHomePage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               const Text(
-                "👆 Tapez une fois pour répondre\n✌️ Double tapez pour rejeter",
+                "👆 Click once to accept\n✌️ Click twice to reject",
                 style: TextStyle(color: Colors.white70, fontSize: 16),
                 textAlign: TextAlign.center,
               ),
@@ -118,7 +118,7 @@ class BlindUserHomePage extends StatelessWidget {
  Widget _buildCallView(BlindUserViewModel viewModel) {
   return GestureDetector(
     onHorizontalDragEnd: (_) {
-      viewModel.toggleCamera();
+      //viewModel.toggleCamera();
     },
     child: Column(
       children: [
@@ -137,7 +137,7 @@ class BlindUserHomePage extends StatelessWidget {
                       )
                     : const Center(
                         child: Text(
-                          "En attente de l'assistant...",
+                          "Waiting for assistant",
                           style: TextStyle(color: Colors.white, fontSize: 18),
                         ),
                       ),
@@ -156,7 +156,7 @@ class BlindUserHomePage extends StatelessWidget {
                         child: AgoraVideoView(
                           controller: VideoViewController(
                             rtcEngine: viewModel.engine,
-                            canvas: const VideoCanvas(uid: 0),
+                            canvas: const VideoCanvas(uid: 2),
                           ),
                         ),
                       ),
@@ -181,7 +181,7 @@ class BlindUserHomePage extends StatelessWidget {
                 children: const [
                   Icon(Icons.call_end),
                   SizedBox(width: 8),
-                  Text("Terminer l'appel"),
+                  Text("End call"),
                 ],
               ),
             ),
