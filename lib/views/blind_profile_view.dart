@@ -142,16 +142,16 @@ class _BlindProfileViewState extends State<BlindProfileView> {
     bool? consent = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Partager votre position"),
-        content: const Text("Souhaitez-vous partager votre position avec votre assistant ?"),
+        title: const Text("share your location"),
+        content: const Text("Would you like to share your location with your assistant ?"),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text("Non"),
+            child: const Text("No"),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text("Oui"),
+            child: const Text("Yes"),
           ),
         ],
       ),
