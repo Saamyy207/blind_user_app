@@ -118,7 +118,7 @@ class BlindUserHomePage extends StatelessWidget {
  Widget _buildCallView(BlindUserViewModel viewModel) {
   return GestureDetector(
     onHorizontalDragEnd: (_) {
-      //viewModel.toggleCamera();
+      viewModel.toggleCamera();
     },
     child: Column(
       children: [
@@ -156,7 +156,7 @@ class BlindUserHomePage extends StatelessWidget {
                         child: AgoraVideoView(
                           controller: VideoViewController(
                             rtcEngine: viewModel.engine,
-                            canvas: const VideoCanvas(uid: 2),
+                            canvas: const VideoCanvas(uid: 0),
                           ),
                         ),
                       ),

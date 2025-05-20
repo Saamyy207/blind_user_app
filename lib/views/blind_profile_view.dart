@@ -2,17 +2,9 @@ import 'package:blind_user_app/views/blinduser_homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-
-
 import 'package:flutter_tts/flutter_tts.dart';
-// Importez la page AIAgentScreen
 import 'ObjectDetectionScreen.dart';
 import 'SpeechScreen .dart';
-
-
-
-
 
 class BlindProfileView extends StatefulWidget {
   final String userId;
@@ -33,12 +25,13 @@ class _BlindProfileViewState extends State<BlindProfileView> {
     _fetchUserInfo();
     _initTts();
     Future.delayed(const Duration(milliseconds: 500), () {
-      speak("Page d'accueil. Trois options disponibles: AI Agent, Détection des objets, Map Guidage, Appel");
+      speak("Home page. Three options available: AI Agent,  Map Guidance, Call");
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _askLocationSharingPermission();
     });
   }
+
   @override
   void dispose() {
     flutterTts.stop();
@@ -46,7 +39,7 @@ class _BlindProfileViewState extends State<BlindProfileView> {
   }
 
   Future<void> _initTts() async {
-    await flutterTts.setLanguage("fr-FR");
+    await flutterTts.setLanguage("en-US");
     await flutterTts.setPitch(1);
     await flutterTts.setSpeechRate(0.9);
   }
@@ -64,30 +57,24 @@ class _BlindProfileViewState extends State<BlindProfileView> {
           context,
           MaterialPageRoute(builder: (context) => const AIAgentScreen()),
         );
-      } else if (label == "Détection des objets") {
-        // Navigation vers l'écran de détection d'objets
+      } else if (label == "Object Detection") {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const ObjectDetectionScreen()),
         );
-      }
-      else if (label == "Appel") {
-
+      } else if (label == "Call") {
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) =>  BlindUserHomePage()),
+          MaterialPageRoute(builder: (context) => BlindUserHomePage()),
         );
-      }else if (label == "Map Guidage") {
-        speak("Le guidage par carte n'est pas encore disponible");
       }
     });
   }
 
   Widget buildButton(String label, IconData icon, Color color, BuildContext context) {
     return Semantics(
-      label: "Bouton $label",
-      hint: "Appuyez pour accéder à $label",
+      label: "Button $label",
+      hint: "Tap to access $label",
       button: true,
       excludeSemantics: true,
       child: GestureDetector(
@@ -128,30 +115,26 @@ class _BlindProfileViewState extends State<BlindProfileView> {
                 )
               ],
             ),
-
           ),
         ),
       ),
     );
   }
 
-
-
-
   Future<void> _askLocationSharingPermission() async {
     bool? consent = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Partager votre position"),
-        content: const Text("Souhaitez-vous partager votre position avec votre assistant ?"),
+        title: const Text("Share your location"),
+        content: const Text("Do you want to share your location with your assistant?"),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text("Non"),
+            child: const Text("No"),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text("Oui"),
+            child: const Text("Yes"),
           ),
         ],
       ),
@@ -162,13 +145,6 @@ class _BlindProfileViewState extends State<BlindProfileView> {
       _startTracking();
     }
   }
-
-
-
-
-
-
-
 
   Future<void> _fetchUserInfo() async {
     final response = await supabase
@@ -226,7 +202,7 @@ class _BlindProfileViewState extends State<BlindProfileView> {
           child: Column(
             children: [
               Semantics(
-                label: "Navigation Visuelle",
+                label: "Visual Navigation",
                 header: true,
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 10),
@@ -239,7 +215,7 @@ class _BlindProfileViewState extends State<BlindProfileView> {
                       ),
                       const SizedBox(height: 10),
                       const Text(
-                        'Navigation Visuelle',
+                        'Visual Navigation',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -260,7 +236,7 @@ class _BlindProfileViewState extends State<BlindProfileView> {
               ),
               const SizedBox(height: 15),
               Semantics(
-                label: "Instructions: Appuyez sur l'un des boutons ci-dessous",
+                label: "Instructions: Tap one of the buttons below",
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                   margin: const EdgeInsets.only(bottom: 20),
@@ -269,7 +245,7 @@ class _BlindProfileViewState extends State<BlindProfileView> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Text(
-                    "Appuyez sur l'un des boutons ci-dessous",
+                    "Tap one of the buttons below",
                     style: TextStyle(
                       fontSize: 15,
                       color: Colors.white,
@@ -280,16 +256,16 @@ class _BlindProfileViewState extends State<BlindProfileView> {
                 ),
               ),
               buildButton("AI Agent", Icons.smart_toy, Colors.deepPurple, context),
-              buildButton("Détection des objets", Icons.visibility, Colors.teal, context),
-              buildButton("Appel", Icons.phone, Colors.indigo, context),
-              buildButton("Map Guidage", Icons.map, Colors.indigo, context),
+              buildButton("Object Detection", Icons.visibility, Colors.teal, context),
+              buildButton("Call", Icons.phone, Colors.indigo, context),
+              
               const SizedBox(height: 20),
               Semantics(
                 button: true,
-                label: "Répéter les options",
+                label: "Repeat options",
                 child: GestureDetector(
                   onTap: () {
-                    speak("Options disponibles: AI Agent, Détection des objets, Map Guidage");
+                    speak("Available options: AI Agent, Object Detection, Phone call");
                   },
                   child: Container(
                     padding: const EdgeInsets.all(16),

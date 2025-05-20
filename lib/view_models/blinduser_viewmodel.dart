@@ -1,10 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../agora_config.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import '../agora_config.dart';
 
 class BlindUserViewModel extends ChangeNotifier {
   final FlutterTts _flutterTts = FlutterTts();
@@ -33,7 +33,7 @@ class BlindUserViewModel extends ChangeNotifier {
   }
 
   Future<void> speak(String message) async {
-    await _flutterTts.setLanguage('fr-FR');
+    await _flutterTts.setLanguage('en-US');
     await _flutterTts.setPitch(1.0);
     await _flutterTts.speak(message);
   }
@@ -43,9 +43,7 @@ class BlindUserViewModel extends ChangeNotifier {
 
     _engine = createAgoraRtcEngine();
     await _engine.initialize(RtcEngineContext(appId: AgoraConfig.appId));
-    await _engine.enableVideo();
-    await _engine.enableAudio();
-    await engine.switchCamera();
+
     _engine.registerEventHandler(
       RtcEngineEventHandler(
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
@@ -57,7 +55,7 @@ class BlindUserViewModel extends ChangeNotifier {
           print('👤 Remote user joined: $remoteUid');
           _remoteUid = remoteUid;
           _stopRinging();
-          speak("L'appel a commencé. Pour raccrocher, double tapez l'écran.");
+          speak("Call started. To hang up, double tap the screen.");
           notifyListeners();
         },
         onUserOffline: (RtcConnection connection, int remoteUid, UserOfflineReasonType reason) {
@@ -66,12 +64,18 @@ class BlindUserViewModel extends ChangeNotifier {
           notifyListeners();
         },
         onConnectionStateChanged: (RtcConnection connection, ConnectionStateType state, ConnectionChangedReasonType reason) {
-          print("⚠ [CONNECTION] État de connexion: $state, raison: $reason");
+          print("⚠ [CONNECTION] State: $state, Reason: $reason");
         },
       ),
     );
 
     await _engine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+    await _engine.enableVideo();
+    await _engine.setCameraCapturerConfiguration(
+      const CameraCapturerConfiguration(cameraDirection: CameraDirection.cameraFront),
+    );
+    await _engine.startPreview();
+    await _engine.enableAudio();
     await _engine.setVideoEncoderConfiguration(
       const VideoEncoderConfiguration(
         dimensions: VideoDimensions(width: 640, height: 360),
@@ -82,48 +86,41 @@ class BlindUserViewModel extends ChangeNotifier {
   }
 
   Future<void> _requestPermissions() async {
-    await [
-      Permission.camera,
-      Permission.microphone,
-    ].request();
+    await [Permission.camera, Permission.microphone].request();
   }
 
-void _listenForIncomingCalls() {
-  print('🔍 Écoute des appels entrants...');
-  _channel = supabase.channel('calls_channel');
+  void _listenForIncomingCalls() {
+    print('🔍 Listening for incoming calls...');
+    _channel = supabase.channel('calls_channel');
 
-  _channel!
-    ..onBroadcast(
-      event: 'incoming_call',
-      callback: (payload) async {
-        print('📞 Appel entrant détecté: $payload');
-        await _startRinging();
-      },
-    )
-    ..onBroadcast(
-      event: 'call_end_assistant',
-      callback: (payload) async {
-        print('📴 L\'assistant a mis fin à l\'appel: $payload');
-        if (_isInCall) {
-          await speak("L'appel a été terminé par l'assistant.");
-          await endCall();
-        }
-      },
-    )
-    ..subscribe(
-      (status, error) {
-        print('📡 Abonnement: $status, erreur: $error');
-      },
-    );
-}
-
+    _channel!
+      ..onBroadcast(
+        event: 'incoming_call',
+        callback: (payload) async {
+          print('📞 Incoming call detected: $payload');
+          await _startRinging();
+        },
+      )
+      ..onBroadcast(
+        event: 'call_end_assistant',
+        callback: (payload) async {
+          print('📴 Assistant ended the call: $payload');
+          if (_isInCall) {
+            await speak("The assistant has ended the call.");
+            await endCall();
+          }
+        },
+      )
+      ..subscribe((status, error) {
+        print('📡 Subscribed: $status, error: $error');
+      });
+  }
 
   Future<void> _startRinging() async {
-    print('🔔 Sonnerie démarrée');
+    print('🔔 Ringtone started');
     _isRinging = true;
     notifyListeners();
 
-    // 1. Démarre la sonnerie immédiatement
     await player.setReleaseMode(ReleaseMode.loop);
     try {
       await player.play(AssetSource('sounds/ringtone.mp3'));
@@ -131,19 +128,27 @@ void _listenForIncomingCalls() {
       try {
         await player.play(AssetSource('assets/sounds/ringtone.mp3'));
       } catch (e) {
-        print('❌ Échec sonnerie : $e');
+        print('❌ Failed to play ringtone: $e');
       }
     }
 
-    // 2. Parle après un petit délai (ex: 2 secondes)
     Future.delayed(const Duration(seconds: 2), () async {
-      await speak("Appel entrant. Tapez une fois pour répondre, deux fois pour rejeter.");
+      await speak("Incoming call from assistant. Tap once to answer, twice to reject.");
     });
   }
+Future<void> toggleCamera() async {
+  try {
+    await _engine.switchCamera();
+    print('📸 Camera switched');
+    speak('camera switched');
+  } catch (e) {
+    print('❌ Failed to switch camera: $e');
+  }
+}
 
   Future<void> _stopRinging() async {
     if (_isRinging) {
-      print('🔕 Sonnerie arrêtée');
+      print('🔕 Ringtone stopped');
       await player.stop();
       _isRinging = false;
       notifyListeners();
@@ -152,40 +157,32 @@ void _listenForIncomingCalls() {
 
   Future<void> acceptCall() async {
     await _stopRinging();
-    await speak("Appel accepté.");
+    await speak("Call accepted.");
     await startCall();
   }
 
   Future<void> rejectCall() async {
     await _stopRinging();
-    await speak("Appel rejeté.");
-
+    await speak("Call rejected.");
     if (_channel != null) {
       try {
         await _channel!.sendBroadcastMessage(
           event: 'call_rejected',
-          payload: {
-            "uid": localUid,
-            "timestamp": DateTime.now().toIso8601String()
-          },
+          payload: {"uid": localUid, "timestamp": DateTime.now().toIso8601String()},
         );
         await _channel!.sendBroadcastMessage(
           event: 'call_end',
-          payload: {
-            "uid": localUid,
-            "status": "rejected",
-            "timestamp": DateTime.now().toIso8601String()
-          },
+          payload: {"uid": localUid, "status": "rejected", "timestamp": DateTime.now().toIso8601String()},
         );
       } catch (e) {
-        print('❌ Erreur envoi rejet: $e');
+        print('❌ Error sending rejection: $e');
       }
     }
   }
 
   Future<void> startCall() async {
     if (_isInCall) {
-      print("⚠️ Un appel est déjà en cours.");
+      print("⚠️ A call is already in progress.");
       return;
     }
     await _engine.startPreview();
@@ -212,34 +209,22 @@ void _listenForIncomingCalls() {
       _remoteUid = null;
       notifyListeners();
 
-      await speak("Appel terminé.");
+      await speak("Call ended.");
 
       if (_channel != null) {
         await _channel!.sendBroadcastMessage(
           event: 'call_ended',
-          payload: {
-            "uid": localUid,
-            "timestamp": DateTime.now().toIso8601String()
-          },
+          payload: {"uid": localUid, "timestamp": DateTime.now().toIso8601String()},
         );
         await _channel!.sendBroadcastMessage(
           event: 'call_end',
-          payload: {
-            "uid": localUid,
-            "status": "ended",
-            "timestamp": DateTime.now().toIso8601String()
-          },
+          payload: {"uid": localUid, "status": "ended", "timestamp": DateTime.now().toIso8601String()},
         );
       }
     } catch (e) {
-      print('❌ Erreur lors de endCall: $e');
+      print('❌ Error during endCall: $e');
     }
   }
-Future<void> toggleCamera() async {
-  await engine.switchCamera();
-  await speak("Changement de caméra");
-}
-
 
   @override
   void dispose() {

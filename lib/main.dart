@@ -1,4 +1,5 @@
 import 'package:blind_user_app/view_models/blinduser_viewmodel.dart';
+import 'package:blind_user_app/views/blind_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // 👈 à ajouter
  // 👈 à ajuster selon ton arborescence
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: CallRedirector(
-        child: QrScannerView(),
+        child: BlindProfileView(userId: '4fc39bc9-dfa4-4164-93b9-bcafe6034955',),
       ),
     );
   }
